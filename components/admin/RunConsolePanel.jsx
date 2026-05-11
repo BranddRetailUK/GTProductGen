@@ -111,7 +111,7 @@ export default function RunConsolePanel() {
       setStatus(payload?.error || "run_creation_failed");
       return;
     }
-    setStatus(`Run created: ${payload.run.id}`);
+    setStatus(`Run created: ${payload.run.id}. Shopify draft creation is included.`);
     await fetchRuns();
     router.push(`/admin/runs/${payload.run.id}`);
   }
@@ -120,7 +120,7 @@ export default function RunConsolePanel() {
     <div className="pg-admin-panel">
       <div className="pg-page-head">
         <p className="pg-kicker">Run Console</p>
-        <h2>Selected or bulk template-first generation</h2>
+        <h2>Generate imagery and Shopify drafts</h2>
       </div>
 
       <form className="pg-admin-form" onSubmit={handleCreateRun}>
@@ -196,7 +196,7 @@ export default function RunConsolePanel() {
 
         {status ? <p className="pg-muted-copy">{status}</p> : null}
         <button type="submit" className="pg-primary-button">
-          Create run
+          Create images + Shopify drafts
         </button>
       </form>
 
@@ -223,6 +223,7 @@ function RunTableRow({ run }) {
       </Link>
       <span>{run.mode}</span>
       <span>{run.status}</span>
+      <span>{run.publishToShopify === false ? "local only" : "Shopify drafts"}</span>
       <span>
         {run.completedCount} complete / {run.failedCount} failed / {remainingCount} remaining / {run.queuedCount} total
       </span>

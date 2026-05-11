@@ -85,7 +85,8 @@ The snapshot contains Shopify-derived template product and variant metadata. Cur
 - print areas JSON
 - view assets JSON
 
-Generated products are local Product Gen records until an admin publishes them to Shopify as draft products.
+Admin-created generation runs render the product imagery, save the Product Gen product record, then create the matching
+draft Shopify product in the same run.
 
 ## Environment Variables
 
@@ -219,11 +220,12 @@ Run a live Product Gen publish smoke test using a generated product and a tempor
 npm run smoke:product-gen-publish
 ```
 
-Generated products can be published from `/admin/products`. Product Gen creates a draft Shopify product from the
-synced Good Game template options and variants, uploads the generated colour images as Shopify product media, and links
-each Shopify variant to the media for its colour. Variant SKUs, unit cost, shipping weight, and initial inventory come
-from the synced template variant rows. Publishing fails if any required colour image is missing or if Shopify readback
-does not show the expected variant SKU, cost, media, and inventory data.
+Admin runs create draft Shopify products automatically after image rendering succeeds. Product Gen creates each draft
+from the synced Good Game template options and variants, uploads the generated colour images as Shopify product media,
+and links each Shopify variant to the media for its colour. Variant SKUs, unit cost, shipping weight, and initial
+inventory come from the synced template variant rows. The run item fails if any required colour image is missing or if
+Shopify readback does not show the expected variant SKU, cost, media, and inventory data. `/admin/products` remains
+available for reviewing records and retrying a Shopify draft create if a run item fails after image generation.
 
 Dry-run template product metadata sync from the main Good Game database:
 
@@ -269,7 +271,7 @@ Before exposing the deployment:
 3. Add `PRODUCT_GEN_SESSION_SECRET`.
 4. Add Dropbox variables and confirm the app has the required scopes.
 5. Add Cloudinary variables with `CLOUDINARY_UPLOAD_FOLDER=ImageGen`.
-6. Add Shopify placeholder variables so they are ready for the publisher integration.
+6. Add Shopify variables and confirm `npm run check:shopify` passes.
 7. Set `NEXT_PUBLIC_SITE_URL` to the Railway production URL.
 
 ## Git Hygiene
@@ -297,8 +299,6 @@ The expected clean state is tracked files clean, with only ignored `.env`, `.nex
 
 Recommended next steps:
 
-1. Implement Shopify Admin API publishing for generated products.
-2. Map generated variants to Shopify options, prices, SKUs, and images.
-3. Decide whether generated products should publish as `draft` first.
-4. Add product-level publish controls in `/admin/products`.
-5. Add run detail pages or item-level error drilldown for failed generation jobs.
+1. Add Shopify update logic for regenerated products that already have a Shopify draft.
+2. Add archive/delete tooling for superseded test drafts.
+3. Add deeper item-level diagnostics for failed Shopify publish attempts.

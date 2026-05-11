@@ -130,12 +130,19 @@ export default function ProductAdminPanel() {
             onClick={handlePublish}
             disabled={!selectedProduct || Boolean(selectedProduct?.shopify?.productGid)}
           >
-            {selectedProduct?.shopify?.productGid ? "Published to Shopify" : "Create Shopify draft"}
+            {selectedProduct?.shopify?.productGid
+              ? "Published to Shopify"
+              : selectedProduct?.shopifyPublishError
+                ? "Retry Shopify draft"
+                : "Create Shopify draft"}
           </button>
           {selectedProduct?.shopify?.adminUrl ? (
             <a className="pg-inline-button" href={selectedProduct.shopify.adminUrl} target="_blank" rel="noreferrer">
               Open Shopify product
             </a>
+          ) : null}
+          {selectedProduct?.shopifyPublishError ? (
+            <p className="pg-error-copy">{selectedProduct.shopifyPublishError}</p>
           ) : null}
         </form>
       </div>

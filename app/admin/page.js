@@ -19,12 +19,12 @@ const ADMIN_ACTIONS = [
   {
     href: "/admin/runs",
     title: "Generation runs",
-    description: "Queue single or bulk image generation and review job history."
+    description: "Queue single or bulk image generation with Shopify draft creation."
   },
   {
     href: "/admin/products",
     title: "Generated products",
-    description: "Review product records before Shopify publishing is enabled."
+    description: "Review product records and retry Shopify draft creation when needed."
   }
 ];
 

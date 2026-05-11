@@ -128,6 +128,7 @@ export default function RunDetailPanel({ runId }) {
             <RunSummaryCard label="Skipped" value={String(statusCounts[ITEM_STATUS_SKIPPED] || 0)} />
             <RunSummaryCard label="Remaining" value={String(getRemainingCount(run))} />
             <RunSummaryCard label="Mode" value={run.mode} />
+            <RunSummaryCard label="Shopify" value={run.publishToShopify === false ? "Local only" : "Drafts enabled"} />
             <RunSummaryCard label="Started" value={formatDate(run.startedAt)} />
           </div>
 
@@ -239,11 +240,22 @@ function RunItemCard({ item }) {
         </div>
         <span>{item.design?.displayName || item.designId}</span>
         {item.product ? <span>{item.product.title}</span> : null}
+        {item.product?.shopify?.adminUrl ? (
+          <a className="pg-inline-link" href={item.product.shopify.adminUrl} target="_blank" rel="noreferrer">
+            Open Shopify draft
+          </a>
+        ) : null}
+        {item.shopify?.adminUrl && !item.product?.shopify?.adminUrl ? (
+          <a className="pg-inline-link" href={item.shopify.adminUrl} target="_blank" rel="noreferrer">
+            Open Shopify draft
+          </a>
+        ) : null}
         {item.status === ITEM_STATUS_SKIPPED ? (
           <p className="pg-muted-copy">
             Existing product reused by older skip logic. Create a new run to render and upload fresh images.
           </p>
         ) : null}
+        {item.product?.shopifyPublishError ? <p className="pg-error-copy">{item.product.shopifyPublishError}</p> : null}
         {item.errorMessage ? <p className="pg-error-copy">{item.errorMessage}</p> : null}
       </div>
 

@@ -13,6 +13,18 @@ function compactProduct(product) {
     title: product.title,
     status: product.status,
     heroImageUrl: product.heroImageUrl,
+    shopify: product.shopify
+      ? {
+          productId: product.shopify.productId,
+          handle: product.shopify.handle,
+          status: product.shopify.status,
+          adminUrl: product.shopify.adminUrl,
+          variantCount: product.shopify.variantCount,
+          mediaCount: product.shopify.mediaCount,
+          inventoryQuantity: product.shopify.inventoryQuantity
+        }
+      : null,
+    shopifyPublishError: product.shopifyPublishError || null,
     images: Array.isArray(product.images)
       ? product.images.map((image) => ({
           id: image.id,

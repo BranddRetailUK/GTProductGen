@@ -53,6 +53,7 @@ function buildRun(pairs) {
     mode: "regenerate_misaligned",
     status: RUN_STATUS_QUEUED,
     forceRerun: true,
+    publishToShopify: false,
     templateIds: Array.from(new Set(pairs.map((pair) => pair.templateId))),
     designIds: Array.from(new Set(pairs.map((pair) => pair.designId))),
     queuedCount: pairs.length,
@@ -155,7 +156,7 @@ async function main() {
     draft.runs.unshift(run);
   });
 
-  await processGenerationRun(run.id);
+  await processGenerationRun(run.id, { publishToShopify: false });
   const nextState = await getServiceState();
   const finishedRun = (nextState.runs || []).find((entry) => entry.id === run.id);
 
