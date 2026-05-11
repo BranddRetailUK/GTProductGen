@@ -1,0 +1,44 @@
+[
+  {
+    "id": "design-arcade-rose",
+    "filename": "arcade-rose.png",
+    "displayName": "Arcade Rose",
+    "extension": "png",
+    "contentHash": "seed-arcade-rose-v1",
+    "sizeBytes": 182034,
+    "artworkMode": "label",
+    "artworkText": "ARCADE ROSE",
+    "status": "ready",
+    "source": "seed",
+    "createdAt": "2026-04-01T09:00:00.000Z",
+    "updatedAt": "2026-04-01T09:00:00.000Z"
+  },
+  {
+    "id": "design-night-shift",
+    "filename": "night-shift.png",
+    "displayName": "Night Shift",
+    "extension": "png",
+    "contentHash": "seed-night-shift-v1",
+    "sizeBytes": 176422,
+    "artworkMode": "label",
+    "artworkText": "NIGHT SHIFT",
+    "status": "ready",
+    "source": "seed",
+    "createdAt": "2026-04-02T09:00:00.000Z",
+    "updatedAt": "2026-04-02T09:00:00.000Z"
+  },
+  {
+    "id": "design-victory-skull",
+    "filename": "victory-skull.png",
+    "displayName": "Victory Skull",
+    "extension": "png",
+    "contentHash": "seed-victory-skull-v1",
+    "sizeBytes": 211008,
+    "artworkMode": "label",
+    "artworkText": "VICTORY SKULL",
+    "status": "ready",
+    "source": "seed",
+    "createdAt": "2026-04-03T09:00:00.000Z",
+    "updatedAt": "2026-04-03T09:00:00.000Z"
+  }
+]

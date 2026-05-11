@@ -1,0 +1,6 @@
+<svg width="900" height="1080" viewBox="0 0 900 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="900" height="1080" rx="36" fill="#F4F4F4"/>
+  <rect x="260" y="260" width="380" height="540" rx="36" fill="#222222"/>
+  <circle cx="450" cy="530" r="120" fill="#C9B037"/>
+  <text x="450" y="940" text-anchor="middle" font-family="Poppins, Arial" font-size="28" fill="#5B5B5B">Accessory Placeholder</text>
+</svg>

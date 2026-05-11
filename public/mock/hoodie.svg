@@ -1,0 +1,12 @@
+<svg width="900" height="900" viewBox="0 0 900 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="900" height="900" rx="48" fill="url(#paint0_linear)"/>
+  <path d="M320 240C320 170 380 120 450 120C520 120 580 170 580 240V320L640 380V710H260V380L320 320V240Z" fill="#1A1A1A"/>
+  <path d="M380 260C380 220 410 190 450 190C490 190 520 220 520 260" stroke="#F26A4B" stroke-width="10"/>
+  <text x="450" y="560" text-anchor="middle" font-family="Space Grotesk, Arial" font-size="46" fill="#F6EDE4" letter-spacing="2">CREATOR DROP</text>
+  <defs>
+    <linearGradient id="paint0_linear" x1="120" y1="120" x2="780" y2="780" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#23303A"/>
+      <stop offset="1" stop-color="#0F1316"/>
+    </linearGradient>
+  </defs>
+</svg>

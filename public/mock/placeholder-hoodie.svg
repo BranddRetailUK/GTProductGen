@@ -1,0 +1,6 @@
+<svg width="900" height="1080" viewBox="0 0 900 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="900" height="1080" rx="36" fill="#F4F4F4"/>
+  <path d="M310 200C310 140 370 100 450 100C530 100 590 140 590 200V310L670 390V900H230V390L310 310V200Z" fill="#222222"/>
+  <path d="M380 260C380 220 410 190 450 190C490 190 520 220 520 260" stroke="#C9B037" stroke-width="10"/>
+  <text x="450" y="940" text-anchor="middle" font-family="Poppins, Arial" font-size="28" fill="#5B5B5B">Hoodie Placeholder</text>
+</svg>

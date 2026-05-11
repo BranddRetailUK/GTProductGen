@@ -1,0 +1,62 @@
+[
+  {
+    "id": "collection-mens",
+    "slug": "mens",
+    "label": "Mens",
+    "description": "Heavyweight staples and everyday cuts for men.",
+    "audienceTag": "Mens",
+    "productTypeTag": null,
+    "cardImageUrl": "/mock/placeholder-hoodie.svg",
+    "sortOrder": 10,
+    "homepageVisible": true,
+    "navVisible": true
+  },
+  {
+    "id": "collection-womens",
+    "slug": "womens",
+    "label": "Womens",
+    "description": "Clean silhouettes and creator-led womenswear.",
+    "audienceTag": "Womens",
+    "productTypeTag": null,
+    "cardImageUrl": "/mock/placeholder-tee.svg",
+    "sortOrder": 20,
+    "homepageVisible": true,
+    "navVisible": true
+  },
+  {
+    "id": "collection-kids",
+    "slug": "kids",
+    "label": "Kids",
+    "description": "Youth-ready fits across tees, hoodies, and sweats.",
+    "audienceTag": "Kids",
+    "productTypeTag": null,
+    "cardImageUrl": "/mock/placeholder-tee.svg",
+    "sortOrder": 30,
+    "homepageVisible": true,
+    "navVisible": true
+  },
+  {
+    "id": "collection-accessories",
+    "slug": "accessories",
+    "label": "Accessories",
+    "description": "Caps, bags, and add-ons built from the same catalog tags.",
+    "audienceTag": null,
+    "productTypeTag": "Accessories",
+    "cardImageUrl": "/mock/placeholder-accessory.svg",
+    "sortOrder": 40,
+    "homepageVisible": true,
+    "navVisible": true
+  },
+  {
+    "id": "collection-new-in",
+    "slug": "new-in",
+    "label": "New In",
+    "description": "All newly created products sorted by the latest creation date.",
+    "audienceTag": null,
+    "productTypeTag": null,
+    "cardImageUrl": "/mock/placeholder-hoodie.svg",
+    "sortOrder": 50,
+    "homepageVisible": true,
+    "navVisible": true
+  }
+]

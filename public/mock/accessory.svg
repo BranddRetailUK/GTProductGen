@@ -1,0 +1,13 @@
+<svg width="900" height="900" viewBox="0 0 900 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="900" height="900" rx="48" fill="url(#paint0_linear)"/>
+  <rect x="220" y="240" width="460" height="420" rx="42" fill="#FAF7F2" stroke="#1E1E1E" stroke-width="10"/>
+  <circle cx="450" cy="450" r="120" fill="#1E1E1E"/>
+  <text x="450" y="470" text-anchor="middle" font-family="Space Grotesk, Arial" font-size="40" fill="#FAF7F2" letter-spacing="3">GG</text>
+  <text x="450" y="560" text-anchor="middle" font-family="Space Grotesk, Arial" font-size="28" fill="#1E1E1E" letter-spacing="2">ACCESSORY</text>
+  <defs>
+    <linearGradient id="paint0_linear" x1="140" y1="80" x2="760" y2="860" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFE1B3"/>
+      <stop offset="1" stop-color="#F2C899"/>
+    </linearGradient>
+  </defs>
+</svg>

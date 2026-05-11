@@ -1,0 +1,6 @@
+<svg width="900" height="1080" viewBox="0 0 900 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="900" height="1080" rx="36" fill="#F4F4F4"/>
+  <path d="M250 210L345 160H555L650 210L610 320L540 290V880H360V290L290 320L250 210Z" fill="#1E1E1E"/>
+  <rect x="405" y="420" width="90" height="90" rx="12" fill="#C9B037"/>
+  <text x="450" y="940" text-anchor="middle" font-family="Poppins, Arial" font-size="28" fill="#5B5B5B">T-Shirt Placeholder</text>
+</svg>
