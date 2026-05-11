@@ -34,6 +34,19 @@ function getFallbackLabel(design) {
   );
 }
 
+async function readApiPayload(response) {
+  const text = await response.text().catch(() => "");
+  if (!text) return {};
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    return {
+      error: response.ok ? "invalid_json_response" : `request_failed_${response.status}`
+    };
+  }
+}
+
 export default function DesignLibraryPanel() {
   const [designs, setDesigns] = useState([]);
   const [status, setStatus] = useState("");
@@ -45,7 +58,11 @@ export default function DesignLibraryPanel() {
 
   async function fetchDesigns() {
     const response = await fetch("/api/admin/designs");
-    const payload = await response.json();
+    const payload = await readApiPayload(response);
+    if (!response.ok) {
+      setStatus(payload?.error || "Unable to load designs.");
+      return;
+    }
     setDesigns(payload?.designs || []);
   }
 
@@ -56,9 +73,9 @@ export default function DesignLibraryPanel() {
       const response = await fetch("/api/admin/designs/rescan", {
         method: "POST"
       });
-      const payload = await response.json();
+      const payload = await readApiPayload(response);
       if (!response.ok) {
-        throw new Error(payload?.error || "rescan_failed");
+        throw new Error(payload?.error || `rescan_failed_${response.status}`);
       }
       setDesigns(payload?.designs || []);
       setStatus("Design library rescanned.");
