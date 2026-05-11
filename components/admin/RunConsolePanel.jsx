@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { RUN_MODE_BULK, RUN_MODE_SINGLE } from "../../lib/constants.js";
+import { RUN_MODE_BULK, RUN_MODE_SINGLE, RUN_STATUS_QUEUED, RUN_STATUS_RUNNING } from "../../lib/constants.js";
+
+const ACTIVE_RUN_STATUSES = new Set([RUN_STATUS_QUEUED, RUN_STATUS_RUNNING]);
 
 export default function RunConsolePanel() {
   const [templates, setTemplates] = useState([]);
@@ -14,27 +16,39 @@ export default function RunConsolePanel() {
   const [forceRerun, setForceRerun] = useState(false);
   const [status, setStatus] = useState("");
 
-  useEffect(() => {
-    void Promise.all([fetchTemplates(), fetchDesigns(), fetchRuns()]);
-  }, []);
-
-  async function fetchTemplates() {
+  const fetchTemplates = useCallback(async () => {
     const response = await fetch("/api/admin/templates");
     const payload = await response.json();
     setTemplates(payload?.templates || []);
-  }
+  }, []);
 
-  async function fetchDesigns() {
+  const fetchDesigns = useCallback(async () => {
     const response = await fetch("/api/admin/designs");
     const payload = await response.json();
     setDesigns(payload?.designs || []);
-  }
+  }, []);
 
-  async function fetchRuns() {
-    const response = await fetch("/api/admin/runs");
+  const fetchRuns = useCallback(async () => {
+    const response = await fetch("/api/admin/runs", { cache: "no-store" });
     const payload = await response.json();
     setRuns(payload?.runs || []);
-  }
+  }, []);
+
+  useEffect(() => {
+    void Promise.all([fetchTemplates(), fetchDesigns(), fetchRuns()]);
+  }, [fetchDesigns, fetchRuns, fetchTemplates]);
+
+  const hasActiveRuns = useMemo(() => runs.some((run) => ACTIVE_RUN_STATUSES.has(run.status)), [runs]);
+
+  useEffect(() => {
+    if (!hasActiveRuns) return undefined;
+
+    const intervalId = window.setInterval(() => {
+      void fetchRuns();
+    }, 3000);
+
+    return () => window.clearInterval(intervalId);
+  }, [fetchRuns, hasActiveRuns]);
 
   const effectiveDesignIds = useMemo(() => {
     if (mode === RUN_MODE_BULK) return [];
@@ -62,7 +76,7 @@ export default function RunConsolePanel() {
       setStatus(payload?.error || "run_creation_failed");
       return;
     }
-    setStatus(`Run queued: ${payload.run.id}`);
+    setStatus(`Run created: ${payload.run.id}`);
     await fetchRuns();
   }
 
@@ -141,16 +155,27 @@ export default function RunConsolePanel() {
 
       <div className="pg-table">
         {runs.map((run) => (
-          <div key={run.id} className="pg-table-row">
-            <strong>{run.id}</strong>
-            <span>{run.mode}</span>
-            <span>{run.status}</span>
-            <span>
-              {run.completedCount} complete / {run.failedCount} failed / {run.queuedCount} queued
-            </span>
-          </div>
+          <RunTableRow key={run.id} run={run} />
         ))}
       </div>
+    </div>
+  );
+}
+
+function RunTableRow({ run }) {
+  const remainingCount = Math.max(
+    0,
+    Number(run.queuedCount || 0) - Number(run.completedCount || 0) - Number(run.failedCount || 0)
+  );
+
+  return (
+    <div className="pg-table-row">
+      <strong>{run.id}</strong>
+      <span>{run.mode}</span>
+      <span>{run.status}</span>
+      <span>
+        {run.completedCount} complete / {run.failedCount} failed / {remainingCount} remaining / {run.queuedCount} total
+      </span>
     </div>
   );
 }

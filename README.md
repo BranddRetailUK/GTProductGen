@@ -14,6 +14,7 @@ As of 2026-05-11:
 - The admin dashboard uses a clean white background, black accents, and sans-serif system fonts.
 - Dropbox scanning is working against the app folder. Current intended artwork location is `/INPUT` inside the Dropbox app folder, with `DROPBOX_ROOT_PATH=/`.
 - Cloudinary image output is configured for the `ImageGen` media-library folder through `CLOUDINARY_UPLOAD_FOLDER=ImageGen`.
+- Base product images are read from the separate Cloudinary environment through `CLOUDINARY_BASE_*`, with `CLOUDINARY_BASE_FOLDER=template_product_images`.
 - Postgres is used through `DATABASE_URL`.
 - Shopify variables are documented and should be populated locally and in Railway, but the Shopify publisher is not implemented yet.
 - Stripe is not currently used by this service.
@@ -96,6 +97,10 @@ Required for production:
 | `PRODUCT_GEN_SESSION_SECRET` | Secret used to sign the admin session cookie. |
 | `CLOUDINARY_URL` | Cloudinary credentials URL. |
 | `CLOUDINARY_UPLOAD_FOLDER` | Cloudinary folder for rendered images. Use `ImageGen`. |
+| `CLOUDINARY_BASE_CLOUD_NAME` | Source Cloudinary cloud name for blank/base product images. |
+| `CLOUDINARY_BASE_API_KEY` | Source Cloudinary API key for blank/base product image discovery. |
+| `CLOUDINARY_BASE_API_SECRET` | Source Cloudinary API secret for blank/base product image discovery. |
+| `CLOUDINARY_BASE_FOLDER` | Source Cloudinary folder for blank/base product images. Use `template_product_images`. |
 
 Dropbox:
 
@@ -164,6 +169,12 @@ Seed or initialize database-backed state:
 
 ```bash
 npm run seed
+```
+
+Sync real base product images from the source Cloudinary environment into template `viewAssets`:
+
+```bash
+npm run sync:base-images -- --apply
 ```
 
 ## Railway Deployment
