@@ -38,7 +38,7 @@ export default function AdminLoginForm() {
       <div className="pg-page-head">
         <p className="pg-kicker">Admin</p>
         <h1>Private product control</h1>
-        <p>Sign in to manage templates, runs, designs, products, and storefront collections.</p>
+        <p>Sign in to manage templates, runs, designs, and generated products.</p>
       </div>
 
       <form className="pg-admin-login" onSubmit={handleSubmit}>

@@ -1,11 +1,10 @@
-import AnimatedRouteLink from "../layout/AnimatedRouteLink.jsx";
+import Link from "next/link";
 
 const ADMIN_LINKS = [
   { href: "/admin/templates", label: "Templates" },
   { href: "/admin/designs", label: "Design Library" },
   { href: "/admin/runs", label: "Run Console" },
-  { href: "/admin/products", label: "Product Admin" },
-  { href: "/admin/navigation", label: "Homepage Collections" }
+  { href: "/admin/products", label: "Product Admin" }
 ];
 
 export default function AdminShell({ session, children }) {
@@ -17,9 +16,9 @@ export default function AdminShell({ session, children }) {
         <p className="pg-muted-copy">{session?.sub}</p>
         <nav className="pg-admin-nav">
           {ADMIN_LINKS.map((link) => (
-            <AnimatedRouteLink key={link.href} href={link.href} className="pg-admin-nav-link">
+            <Link key={link.href} href={link.href} className="pg-admin-nav-link">
               {link.label}
-            </AnimatedRouteLink>
+            </Link>
           ))}
         </nav>
         <form action="/api/admin/auth/logout" method="post">

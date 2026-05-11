@@ -157,79 +157,6 @@ CREATE TABLE IF NOT EXISTS product_artwork_state (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS shop_collections (
-  id TEXT PRIMARY KEY,
-  slug TEXT NOT NULL UNIQUE,
-  label TEXT NOT NULL,
-  description TEXT,
-  audience_tag TEXT,
-  product_type_tag TEXT,
-  card_image_url TEXT,
-  sort_order INTEGER NOT NULL DEFAULT 0,
-  homepage_visible BOOLEAN NOT NULL DEFAULT TRUE,
-  nav_visible BOOLEAN NOT NULL DEFAULT TRUE,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
-CREATE TABLE IF NOT EXISTS checkout_sessions (
-  id TEXT PRIMARY KEY,
-  stripe_session_id TEXT UNIQUE,
-  status TEXT NOT NULL DEFAULT 'pending',
-  amount_total NUMERIC(10, 2) NOT NULL DEFAULT 0,
-  currency TEXT NOT NULL DEFAULT 'gbp',
-  email TEXT,
-  cart_snapshot JSONB NOT NULL DEFAULT '[]'::jsonb,
-  order_id TEXT,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
-CREATE TABLE IF NOT EXISTS customers (
-  id TEXT PRIMARY KEY,
-  email TEXT NOT NULL UNIQUE,
-  first_name TEXT,
-  last_name TEXT,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
-CREATE TABLE IF NOT EXISTS addresses (
-  id TEXT PRIMARY KEY,
-  customer_id TEXT REFERENCES customers(id) ON DELETE CASCADE,
-  label TEXT,
-  address JSONB NOT NULL DEFAULT '{}'::jsonb,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
-CREATE TABLE IF NOT EXISTS orders (
-  id TEXT PRIMARY KEY,
-  stripe_session_id TEXT UNIQUE,
-  status TEXT NOT NULL DEFAULT 'pending',
-  email TEXT,
-  currency TEXT NOT NULL DEFAULT 'gbp',
-  amount_total NUMERIC(10, 2) NOT NULL DEFAULT 0,
-  line_items JSONB NOT NULL DEFAULT '[]'::jsonb,
-  shipping_address JSONB NOT NULL DEFAULT '{}'::jsonb,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
-CREATE TABLE IF NOT EXISTS order_items (
-  id BIGSERIAL PRIMARY KEY,
-  order_id TEXT NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
-  product_id TEXT,
-  variant_id TEXT,
-  title TEXT NOT NULL,
-  colour_name TEXT,
-  size_name TEXT,
-  quantity INTEGER NOT NULL DEFAULT 1,
-  unit_price_gbp NUMERIC(10, 2) NOT NULL DEFAULT 0,
-  image_url TEXT,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
 CREATE TABLE IF NOT EXISTS admin_users (
   id TEXT PRIMARY KEY,
   email TEXT NOT NULL UNIQUE,
@@ -260,5 +187,4 @@ CREATE TABLE IF NOT EXISTS webhook_event_receipts (
 CREATE INDEX IF NOT EXISTS idx_products_created_at ON products(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_generation_runs_created_at ON generation_runs(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_design_assets_updated_at ON design_assets(updated_at DESC);
-CREATE INDEX IF NOT EXISTS idx_shop_collections_sort_order ON shop_collections(sort_order ASC);
 CREATE INDEX IF NOT EXISTS idx_service_logs_service_created_at ON service_logs(service, created_at DESC);
