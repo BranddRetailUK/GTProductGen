@@ -1,4 +1,6 @@
-import "dotenv/config";
+import dotenv from "dotenv";
+
+const DOTENV_VALUES = dotenv.config().parsed || {};
 
 const COMMAND = process.argv[2];
 
@@ -6,8 +8,12 @@ function clean(value) {
   return String(value || "").trim();
 }
 
+function env(name) {
+  return clean(process.env[name]) || clean(DOTENV_VALUES[name]);
+}
+
 function getDropboxAppKey() {
-  return clean(process.env.DROPBOX_APP_KEY || process.argv[3]);
+  return env("DROPBOX_APP_KEY") || clean(process.argv[3]);
 }
 
 function printUsage() {
@@ -39,9 +45,9 @@ function buildAuthUrl() {
 }
 
 async function exchangeCode() {
-  const code = clean(process.argv[3] || process.env.DROPBOX_AUTH_CODE);
-  const appKey = clean(process.env.DROPBOX_APP_KEY);
-  const appSecret = clean(process.env.DROPBOX_APP_SECRET);
+  const code = clean(process.argv[3]) || env("DROPBOX_AUTH_CODE");
+  const appKey = env("DROPBOX_APP_KEY");
+  const appSecret = env("DROPBOX_APP_SECRET");
 
   if (!code) throw new Error("missing_authorization_code");
   if (!appKey) throw new Error("missing_DROPBOX_APP_KEY");
@@ -84,9 +90,9 @@ async function exchangeCode() {
 }
 
 async function testRefreshToken() {
-  const refreshToken = clean(process.env.DROPBOX_REFRESH_TOKEN);
-  const appKey = clean(process.env.DROPBOX_APP_KEY);
-  const appSecret = clean(process.env.DROPBOX_APP_SECRET);
+  const refreshToken = env("DROPBOX_REFRESH_TOKEN");
+  const appKey = env("DROPBOX_APP_KEY");
+  const appSecret = env("DROPBOX_APP_SECRET");
 
   if (!refreshToken) throw new Error("missing_DROPBOX_REFRESH_TOKEN");
   if (!appKey) throw new Error("missing_DROPBOX_APP_KEY");
