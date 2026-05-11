@@ -54,12 +54,46 @@ export default function RunConsolePanel() {
 
   const effectiveDesignIds = useMemo(() => {
     if (mode === RUN_MODE_BULK) return [];
-    return designIds.slice(0, 1);
+    return designIds;
   }, [designIds, mode]);
+
+  const allDesignIds = useMemo(() => designs.map((design) => String(design.id)), [designs]);
+  const selectedDesignCount = useMemo(
+    () => designIds.filter((id) => allDesignIds.includes(String(id))).length,
+    [allDesignIds, designIds]
+  );
+  const allDesignsSelected = allDesignIds.length > 0 && selectedDesignCount === allDesignIds.length;
+
+  function toggleTemplate(templateId, isChecked) {
+    const nextId = String(templateId);
+    setTemplateIds((current) =>
+      isChecked
+        ? Array.from(new Set([...current, nextId]))
+        : current.filter((entry) => String(entry) !== nextId)
+    );
+  }
+
+  function toggleDesign(designId, isChecked) {
+    const nextId = String(designId);
+    setDesignIds((current) =>
+      isChecked
+        ? Array.from(new Set([...current, nextId]))
+        : current.filter((entry) => String(entry) !== nextId)
+    );
+  }
 
   async function handleCreateRun(event) {
     event.preventDefault();
     setStatus("");
+
+    if (!templateIds.length) {
+      setStatus("Select at least one template.");
+      return;
+    }
+    if (mode === RUN_MODE_SINGLE && !effectiveDesignIds.length) {
+      setStatus("Select at least one artwork.");
+      return;
+    }
 
     const response = await fetch("/api/admin/runs", {
       method: "POST",
@@ -86,18 +120,18 @@ export default function RunConsolePanel() {
     <div className="pg-admin-panel">
       <div className="pg-page-head">
         <p className="pg-kicker">Run Console</p>
-        <h2>Single or bulk template-first generation</h2>
+        <h2>Selected or bulk template-first generation</h2>
       </div>
 
       <form className="pg-admin-form" onSubmit={handleCreateRun}>
         <div className="pg-toggle-row">
           <label>
             <input type="radio" checked={mode === RUN_MODE_SINGLE} onChange={() => setMode(RUN_MODE_SINGLE)} />
-            Single design
+            Selected artworks
           </label>
           <label>
             <input type="radio" checked={mode === RUN_MODE_BULK} onChange={() => setMode(RUN_MODE_BULK)} />
-            Bulk all designs
+            Bulk all artworks
           </label>
         </div>
 
@@ -109,13 +143,7 @@ export default function RunConsolePanel() {
                 <input
                   type="checkbox"
                   checked={templateIds.includes(String(template.id))}
-                  onChange={(event) =>
-                    setTemplateIds((current) =>
-                      event.target.checked
-                        ? [...current, String(template.id)]
-                        : current.filter((entry) => entry !== String(template.id))
-                    )
-                  }
+                  onChange={(event) => toggleTemplate(template.id, event.target.checked)}
                 />
                 {template.title}
               </label>
@@ -124,15 +152,36 @@ export default function RunConsolePanel() {
 
           {mode === RUN_MODE_SINGLE ? (
             <div className="pg-admin-checklist">
-              <strong>Select one design</strong>
+              <div className="pg-checklist-head">
+                <strong>Select artworks</strong>
+                <span>
+                  {selectedDesignCount}/{allDesignIds.length}
+                </span>
+              </div>
+              <div className="pg-toggle-row">
+                <button
+                  type="button"
+                  className="pg-inline-button"
+                  onClick={() => setDesignIds(allDesignIds)}
+                  disabled={allDesignsSelected || !allDesignIds.length}
+                >
+                  Select all
+                </button>
+                <button
+                  type="button"
+                  className="pg-outline-button"
+                  onClick={() => setDesignIds([])}
+                  disabled={!designIds.length}
+                >
+                  Clear
+                </button>
+              </div>
               {designs.map((design) => (
                 <label key={design.id}>
                   <input
                     type="checkbox"
                     checked={designIds.includes(String(design.id))}
-                    onChange={(event) =>
-                      setDesignIds(event.target.checked ? [String(design.id)] : [])
-                    }
+                    onChange={(event) => toggleDesign(design.id, event.target.checked)}
                   />
                   {design.displayName}
                 </label>

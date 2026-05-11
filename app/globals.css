@@ -5314,6 +5314,12 @@ body::after {
   outline: none;
 }
 
+.pg-outline-button:disabled,
+.pg-inline-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 .pg-toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -5341,6 +5347,19 @@ body::after {
 .pg-toggle-row input,
 .pg-admin-checklist input {
   accent-color: #111111;
+}
+
+.pg-checklist-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pg-checklist-head span {
+  color: var(--admin-muted);
+  font-size: 0.9rem;
+  font-weight: 700;
 }
 
 .pg-table-row {
