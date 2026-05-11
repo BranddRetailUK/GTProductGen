@@ -1,33 +1,217 @@
 # Product Gen
 
-Standalone single-service Railway build for:
-- Dropbox design ingest
-- template-driven batch product generation
-- internal Sharp-based product image rendering
-- private admin
-- Shopify publishing backend
+Private product generation service for Railway.
 
-Runtime boundaries:
-- all code lives under `product-gen/`
-- no runtime imports outside this folder
-- one custom Node server boots Next, queue workers, and Dropbox polling together
-- customer-facing storefront and checkout are owned by Shopify, not this service
+This repo is no longer a customer-facing storefront. Shopify owns the storefront and checkout. Product Gen is the internal admin service that scans artwork from Dropbox, renders product images, stores run history, uploads generated images to Cloudinary, and prepares generated product records for a later Shopify Admin API publishing step.
 
-Before running:
-1. Install dependencies inside `product-gen/`
-2. Configure `.env`
-3. Run `npm run dev`
+## Current State
 
-Environment notes:
-- Dropbox scanning currently uses `DROPBOX_ACCESS_TOKEN` and `DROPBOX_ROOT_PATH`.
-- For longer-running Railway deployments, prefer `DROPBOX_REFRESH_TOKEN` with `DROPBOX_APP_KEY` and `DROPBOX_APP_SECRET`; `DROPBOX_ACCESS_TOKEN` still works for local/direct-token testing.
-- The Dropbox app must have `files.metadata.read` for folder scans. Product image rendering also needs temporary file links, so enable `files.content.read` before generating a fresh token.
-- For a Dropbox app-folder app, set `DROPBOX_ROOT_PATH=/` when designs live at the app-folder root, or set it to a child folder such as `/Product Gen`.
-- Railway should provide `DATABASE_URL`; keep `DATABASE_SSL` empty unless the database explicitly requires SSL off.
-- Set production `PRODUCT_GEN_ADMIN_EMAIL`, `PRODUCT_GEN_ADMIN_PASSWORD`, and `PRODUCT_GEN_SESSION_SECRET` values before exposing the admin UI.
-- Rendered product images upload to Cloudinary through `CLOUDINARY_URL`; set `CLOUDINARY_UPLOAD_FOLDER=ImageGen` to place outputs in the ImageGen media-library folder.
-- Shopify publishing will use `SHOPIFY_STORE_DOMAIN`, `SHOPIFY_ADMIN_ACCESS_TOKEN`, `SHOPIFY_API_VERSION`, `SHOPIFY_PRODUCT_STATUS`, `SHOPIFY_DEFAULT_VENDOR`, `SHOPIFY_DEFAULT_PRODUCT_TYPE`, and `SHOPIFY_LOCATION_ID`.
+As of 2026-05-11:
 
-Shopify status:
-- Template seed data contains Shopify product/variant IDs, but there is not yet an Admin API publisher in this service.
-- Product push to Shopify will need a separate integration step once Admin API credentials are populated.
+- `/` redirects to `/admin`.
+- `/admin` is the only UI surface.
+- Admin login uses `PRODUCT_GEN_ADMIN_EMAIL`, `PRODUCT_GEN_ADMIN_PASSWORD`, and `PRODUCT_GEN_SESSION_SECRET`.
+- The admin dashboard uses a clean white background, black accents, and sans-serif system fonts.
+- Dropbox scanning is working against the app folder. Current intended artwork location is `/INPUT` inside the Dropbox app folder, with `DROPBOX_ROOT_PATH=/`.
+- Cloudinary image output is configured for the `ImageGen` media-library folder through `CLOUDINARY_UPLOAD_FOLDER=ImageGen`.
+- Postgres is used through `DATABASE_URL`.
+- Shopify variables are documented and should be populated locally and in Railway, but the Shopify publisher is not implemented yet.
+- Stripe is not currently used by this service.
+
+## Admin UI
+
+Routes:
+
+- `/admin` - dashboard
+- `/admin/designs` - Dropbox design library and manual rescan
+- `/admin/templates` - product templates, print areas, and view assets
+- `/admin/runs` - single or bulk generation queue and job history
+- `/admin/products` - generated product records
+
+The admin app has no public product pages, cart, checkout, or customer navigation.
+
+## Runtime Architecture
+
+One custom Node server starts:
+
+- Next.js app routes
+- the product generation runtime
+- Dropbox polling
+- pg-boss workers when enabled
+
+Current state is persisted in Postgres in `product_gen_state` under the `service_state` key. The migration also creates normalized product/template/run tables for future use, but the current app state path is the JSON state store.
+
+Queue behavior:
+
+- `PG_BOSS_ENABLED` defaults to enabled when `DATABASE_URL` exists.
+- If pg-boss is unavailable or disabled, generation and Dropbox scan work falls back to in-process async execution.
+
+## Image Generation
+
+The generation pipeline currently:
+
+1. Scans Dropbox recursively from `DROPBOX_ROOT_PATH`.
+2. Indexes supported artwork files.
+3. Loads a selected template and design.
+4. Uses Sharp to place artwork inside the first matching print area.
+5. Renders front-view product images for each template colour.
+6. Uploads rendered PNGs to Cloudinary.
+7. Stores generated product, image, variant, and run state.
+
+Supported Dropbox extensions in the scanner:
+
+- `.png`
+- `.jpg`
+- `.jpeg`
+- `.svg`
+- `.pdf`
+- `.psd`
+
+Rendering is most reliable with PNG, JPEG, and SVG artwork because those formats are directly handled by the current Sharp path.
+
+## Product Templates
+
+Template seed data is loaded from `db/seeds/template-products.snapshot.json`.
+
+The snapshot contains Shopify-derived template product and variant metadata. Current templates include apparel products such as T-shirts and hoodies. Template editing in `/admin/templates` controls:
+
+- title
+- product type
+- print areas JSON
+- view assets JSON
+
+Generated products are currently local Product Gen records. They are not pushed to Shopify yet.
+
+## Environment Variables
+
+`.env` is used locally and is intentionally ignored by Git. There is no committed `.env.example` file. Keep local secrets in `.env` and mirror production values into Railway Variables.
+
+Required for production:
+
+| Variable | Purpose |
+| --- | --- |
+| `DATABASE_URL` | Railway Postgres connection string. |
+| `PRODUCT_GEN_ADMIN_EMAIL` | Admin login email. |
+| `PRODUCT_GEN_ADMIN_PASSWORD` | Admin login password. |
+| `PRODUCT_GEN_SESSION_SECRET` | Secret used to sign the admin session cookie. |
+| `CLOUDINARY_URL` | Cloudinary credentials URL. |
+| `CLOUDINARY_UPLOAD_FOLDER` | Cloudinary folder for rendered images. Use `ImageGen`. |
+
+Dropbox:
+
+| Variable | Purpose |
+| --- | --- |
+| `DROPBOX_ROOT_PATH` | Root path to scan. Use `/` for the app folder root when artwork is in `/INPUT`. |
+| `DROPBOX_ACCESS_TOKEN` | Direct token for local or short-term testing. |
+| `DROPBOX_REFRESH_TOKEN` | Preferred long-running auth token for Railway. |
+| `DROPBOX_APP_KEY` | Required with `DROPBOX_REFRESH_TOKEN`. |
+| `DROPBOX_APP_SECRET` | Required with `DROPBOX_REFRESH_TOKEN`. |
+
+Dropbox app permissions required:
+
+- `files.metadata.read` for recursive scans
+- `files.content.read` for temporary file links used during rendering
+
+Runtime and queue options:
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `PORT` | `3000` | Set automatically by Railway. |
+| `DATABASE_SSL` | SSL with `rejectUnauthorized: false` | Set to `false` only if the database explicitly requires SSL off. |
+| `PG_BOSS_ENABLED` | `true` | Set to `false` to bypass pg-boss and run work in-process. |
+| `PRODUCT_GEN_SCAN_INTERVAL_MS` | `900000` | Dropbox polling interval in milliseconds. |
+| `PRODUCT_GEN_QUEUE_GENERATION` | `product-gen:generation-run` | pg-boss generation queue name. |
+| `PRODUCT_GEN_QUEUE_DROPBOX_SCAN` | `product-gen:dropbox-scan` | pg-boss Dropbox scan queue name. |
+| `NEXT_PUBLIC_SITE_URL` | `http://localhost:3000` | Used for logout redirect URL construction. Set to the Railway app URL in production. |
+
+Shopify placeholders:
+
+| Variable | Purpose |
+| --- | --- |
+| `SHOPIFY_STORE_DOMAIN` | Shopify shop domain, for example `example.myshopify.com`. |
+| `SHOPIFY_ADMIN_ACCESS_TOKEN` | Admin API access token. |
+| `SHOPIFY_API_VERSION` | Target Shopify Admin API version. |
+| `SHOPIFY_PRODUCT_STATUS` | Intended status for pushed products, usually `draft` at first. |
+| `SHOPIFY_DEFAULT_VENDOR` | Fallback vendor for Shopify products. |
+| `SHOPIFY_DEFAULT_PRODUCT_TYPE` | Fallback product type. |
+| `SHOPIFY_LOCATION_ID` | Fulfilment/inventory location ID when needed. |
+
+Shopify publishing is the next integration step. These variables are documented and ready to populate, but the service does not yet call the Shopify Admin API.
+
+## Local Development
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Create a local `.env` file with the variables above. Do not commit it.
+
+Start the service:
+
+```bash
+npm run dev
+```
+
+Build check:
+
+```bash
+npm run build
+```
+
+Seed or initialize database-backed state:
+
+```bash
+npm run seed
+```
+
+## Railway Deployment
+
+Railway should run the normal build and start commands from `package.json`:
+
+```bash
+npm run build
+npm start
+```
+
+Before exposing the deployment:
+
+1. Add Railway Postgres and confirm `DATABASE_URL` is present.
+2. Add admin login variables.
+3. Add `PRODUCT_GEN_SESSION_SECRET`.
+4. Add Dropbox variables and confirm the app has the required scopes.
+5. Add Cloudinary variables with `CLOUDINARY_UPLOAD_FOLDER=ImageGen`.
+6. Add Shopify placeholder variables so they are ready for the publisher integration.
+7. Set `NEXT_PUBLIC_SITE_URL` to the Railway production URL.
+
+## Git Hygiene
+
+Ignored local files include:
+
+- `.env`
+- `.env.*`
+- `.next/`
+- `node_modules/`
+- build outputs
+- logs
+- OS metadata
+
+Before pushing, check:
+
+```bash
+git status --short --ignored
+npm run build
+```
+
+The expected clean state is tracked files clean, with only ignored `.env`, `.next/`, and `node_modules/` visible locally.
+
+## Next Integration Work
+
+Recommended next steps:
+
+1. Implement Shopify Admin API publishing for generated products.
+2. Map generated variants to Shopify options, prices, SKUs, and images.
+3. Decide whether generated products should publish as `draft` first.
+4. Add product-level publish controls in `/admin/products`.
+5. Add run detail pages or item-level error drilldown for failed generation jobs.
