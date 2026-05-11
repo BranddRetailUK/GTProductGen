@@ -5210,6 +5210,77 @@ body::after {
   gap: 10px;
 }
 
+.pg-template-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 18px;
+}
+
+.pg-template-card {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 14px;
+  min-height: 100%;
+  padding: 16px;
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.pg-template-card-media {
+  display: grid;
+  aspect-ratio: 1;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.pg-template-card-media img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+.pg-template-card-media span {
+  padding: 14px;
+  color: var(--admin-muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.pg-template-card-copy {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  min-width: 0;
+}
+
+.pg-template-card-copy h3,
+.pg-template-card-copy p {
+  margin: 0;
+}
+
+.pg-template-card-copy h3 {
+  color: var(--admin-ink);
+  font-size: 1.12rem;
+  font-weight: 750;
+  line-height: 1.18;
+  overflow-wrap: anywhere;
+}
+
+.pg-template-card-copy p {
+  color: var(--admin-muted);
+  font-size: 0.94rem;
+  line-height: 1.35;
+}
+
+.pg-template-card-action {
+  text-decoration: none;
+}
+
 .pg-admin-form,
 .pg-admin-login,
 .pg-admin-checklist,
@@ -5377,6 +5448,49 @@ body::after {
 .pg-table-row span {
   min-width: 0;
   overflow-wrap: anywhere;
+}
+
+.pg-design-table-row {
+  grid-template-columns:
+    minmax(260px, 1.35fr) minmax(170px, 1fr) minmax(100px, 0.45fr)
+    minmax(90px, 0.4fr);
+}
+
+.pg-design-title-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pg-design-title-cell strong {
+  color: var(--admin-ink);
+}
+
+.pg-design-thumb {
+  display: grid;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid var(--admin-border);
+  border-radius: 6px;
+  background: var(--admin-surface-soft);
+}
+
+.pg-design-thumb img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+.pg-design-thumb-fallback {
+  color: var(--admin-muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1;
 }
 
 .pg-run-summary-grid,
@@ -5783,6 +5897,10 @@ body::after {
   }
 
   .pg-run-item-card {
+    grid-template-columns: 1fr;
+  }
+
+  .pg-design-table-row {
     grid-template-columns: 1fr;
   }
 

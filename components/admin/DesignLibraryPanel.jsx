@@ -1,6 +1,38 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
+const THUMBNAILABLE_EXTENSIONS = new Set(["jpg", "jpeg", "png", "tif", "tiff", "gif", "webp", "ppm", "bmp"]);
+
+function getDesignThumbnailSrc(design) {
+  const extension = String(design?.extension || "").toLowerCase();
+  const canLoadDropboxThumbnail =
+    design?.source === "dropbox" &&
+    design?.pathDisplay &&
+    THUMBNAILABLE_EXTENSIONS.has(extension) &&
+    Number(design?.sizeBytes || 0) < 20_000_000;
+
+  if (canLoadDropboxThumbnail) {
+    return `/api/admin/designs/${encodeURIComponent(String(design.id))}/thumbnail`;
+  }
+
+  return null;
+}
+
+function getFallbackLabel(design) {
+  const extension = String(design?.extension || "").trim();
+  if (extension && extension.length <= 4) return extension.toUpperCase();
+
+  return (
+    String(design?.displayName || "Artwork")
+      .split(/\s+/)
+      .filter(Boolean)
+      .map((part) => part[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase() || "ART"
+  );
+}
 
 export default function DesignLibraryPanel() {
   const [designs, setDesigns] = useState([]);
@@ -53,8 +85,11 @@ export default function DesignLibraryPanel() {
 
       <div className="pg-table">
         {(designs || []).map((design) => (
-          <div key={design.id} className="pg-table-row">
-            <strong>{design.displayName}</strong>
+          <div key={design.id} className="pg-table-row pg-design-table-row">
+            <span className="pg-design-title-cell">
+              <DesignThumbnail design={design} />
+              <strong>{design.displayName}</strong>
+            </span>
             <span>{design.filename}</span>
             <span>{design.source}</span>
             <span>{design.status}</span>
@@ -62,5 +97,31 @@ export default function DesignLibraryPanel() {
         ))}
       </div>
     </div>
+  );
+}
+
+function DesignThumbnail({ design }) {
+  const [imageError, setImageError] = useState(false);
+  const thumbnailSrc = useMemo(() => getDesignThumbnailSrc(design), [design]);
+
+  useEffect(() => {
+    setImageError(false);
+  }, [thumbnailSrc]);
+
+  return (
+    <span className="pg-design-thumb" aria-hidden="true">
+      {thumbnailSrc && !imageError ? (
+        <img
+          src={thumbnailSrc}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          fetchPriority="low"
+          onError={() => setImageError(true)}
+        />
+      ) : (
+        <span className="pg-design-thumb-fallback">{getFallbackLabel(design)}</span>
+      )}
+    </span>
   );
 }

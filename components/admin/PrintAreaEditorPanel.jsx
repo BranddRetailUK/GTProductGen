@@ -349,7 +349,7 @@ export default function PrintAreaEditorPanel() {
                   type="number"
                   min={key === "width" || key === "height" ? 2 : 0}
                   max={100}
-                  step={0.1}
+                  step={key === "x" || key === "y" ? 1 : 0.1}
                   value={Number((area[key] * 100).toFixed(1))}
                   onChange={(event) => updateAreaValue(key, event.target.value)}
                 />
