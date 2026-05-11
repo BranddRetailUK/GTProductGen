@@ -5374,7 +5374,8 @@ body::after {
 
 .pg-run-summary-card,
 .pg-run-image-card,
-.pg-run-item-card {
+.pg-run-item-card,
+.pg-run-note {
   border: 1px solid var(--admin-border);
   border-radius: 8px;
   background: #ffffff;
@@ -5389,7 +5390,8 @@ body::after {
 .pg-run-summary-card span,
 .pg-run-image-card span,
 .pg-run-item-copy span,
-.pg-section-head-clean span {
+.pg-section-head-clean span,
+.pg-run-note p {
   color: var(--admin-muted);
 }
 
@@ -5419,6 +5421,16 @@ body::after {
 
 .pg-run-image-grid {
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+}
+
+.pg-run-note {
+  padding: 12px;
+  background: var(--admin-surface-soft);
+}
+
+.pg-run-note p {
+  margin: 0;
+  line-height: 1.55;
 }
 
 .pg-run-image-card {

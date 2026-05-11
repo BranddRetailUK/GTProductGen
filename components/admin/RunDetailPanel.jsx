@@ -3,7 +3,12 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { RUN_STATUS_QUEUED, RUN_STATUS_RUNNING } from "../../lib/constants.js";
+import {
+  ITEM_STATUS_COMPLETED,
+  ITEM_STATUS_SKIPPED,
+  RUN_STATUS_QUEUED,
+  RUN_STATUS_RUNNING
+} from "../../lib/constants.js";
 
 const ACTIVE_RUN_STATUSES = new Set([RUN_STATUS_QUEUED, RUN_STATUS_RUNNING]);
 
@@ -58,15 +63,41 @@ export default function RunDetailPanel({ runId }) {
     return () => window.clearInterval(intervalId);
   }, [fetchRun, isActive]);
 
+  const statusCounts = useMemo(() => {
+    return (run?.items || []).reduce(
+      (counts, item) => ({
+        ...counts,
+        [item.status]: Number(counts[item.status] || 0) + 1
+      }),
+      {}
+    );
+  }, [run]);
+
   const generatedImages = useMemo(() => {
     return (run?.items || []).flatMap((item) =>
-      (item.product?.images || []).map((image) => ({
-        ...image,
-        itemId: item.id,
-        productTitle: item.product?.title,
-        productId: item.product?.id,
-        status: item.status
-      }))
+      item.status === ITEM_STATUS_COMPLETED
+        ? (item.product?.images || []).map((image) => ({
+            ...image,
+            itemId: item.id,
+            productTitle: item.product?.title,
+            productId: item.product?.id,
+            status: item.status
+          }))
+        : []
+    );
+  }, [run]);
+
+  const reusedImages = useMemo(() => {
+    return (run?.items || []).flatMap((item) =>
+      item.status === ITEM_STATUS_SKIPPED
+        ? (item.product?.images || []).map((image) => ({
+            ...image,
+            itemId: item.id,
+            productTitle: item.product?.title,
+            productId: item.product?.id,
+            status: item.status
+          }))
+        : []
     );
   }, [run]);
 
@@ -93,7 +124,8 @@ export default function RunDetailPanel({ runId }) {
         <>
           <div className="pg-run-summary-grid">
             <RunSummaryCard label="Status" value={run.status} />
-            <RunSummaryCard label="Progress" value={`${run.completedCount}/${run.queuedCount}`} />
+            <RunSummaryCard label="Processed" value={`${run.completedCount}/${run.queuedCount}`} />
+            <RunSummaryCard label="Skipped" value={String(statusCounts[ITEM_STATUS_SKIPPED] || 0)} />
             <RunSummaryCard label="Remaining" value={String(getRemainingCount(run))} />
             <RunSummaryCard label="Mode" value={run.mode} />
             <RunSummaryCard label="Force rerun" value={run.forceRerun ? "Yes" : "No"} />
@@ -102,7 +134,7 @@ export default function RunDetailPanel({ runId }) {
 
           <section className="pg-run-section">
             <div className="pg-section-head-clean">
-              <h3>Images</h3>
+              <h3>Generated this run</h3>
               <span>{generatedImages.length}</span>
             </div>
             {generatedImages.length ? (
@@ -127,10 +159,44 @@ export default function RunDetailPanel({ runId }) {
               </div>
             ) : (
               <div className="pg-empty-state">
-                <p>No images yet.</p>
+                <p>No new images were generated in this run.</p>
               </div>
             )}
           </section>
+
+          {reusedImages.length ? (
+            <section className="pg-run-section">
+              <div className="pg-section-head-clean">
+                <h3>Existing images reused</h3>
+                <span>{reusedImages.length}</span>
+              </div>
+              <div className="pg-run-note">
+                <p>
+                  These images came from existing product records because matching products already existed. Enable Force
+                  rerun when creating a run to render and upload fresh Cloudinary images.
+                </p>
+              </div>
+              <div className="pg-run-image-grid">
+                {reusedImages.map((image) => (
+                  <a
+                    key={`${image.itemId}:${image.id}:${image.imageUrl}`}
+                    href={image.imageUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="pg-run-image-card"
+                  >
+                    <span className="pg-run-image-frame">
+                      <img src={image.imageUrl} alt={image.productTitle || "Existing product"} />
+                    </span>
+                    <strong>{image.productTitle || image.productId}</strong>
+                    <span>
+                      {image.colourName || "Default"} · {image.viewId || "front"}
+                    </span>
+                  </a>
+                ))}
+              </div>
+            </section>
+          ) : null}
 
           <section className="pg-run-section">
             <div className="pg-section-head-clean">
@@ -174,6 +240,9 @@ function RunItemCard({ item }) {
         </div>
         <span>{item.design?.displayName || item.designId}</span>
         {item.product ? <span>{item.product.title}</span> : null}
+        {item.status === ITEM_STATUS_SKIPPED ? (
+          <p className="pg-muted-copy">Existing product reused. Force rerun is required for a fresh render/upload.</p>
+        ) : null}
         {item.errorMessage ? <p className="pg-error-copy">{item.errorMessage}</p> : null}
       </div>
 
