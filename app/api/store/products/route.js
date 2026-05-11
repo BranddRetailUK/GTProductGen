@@ -1,5 +1,7 @@
 import { getStoreProducts } from "../../../../lib/catalog.js";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const audience = searchParams.get("audience");

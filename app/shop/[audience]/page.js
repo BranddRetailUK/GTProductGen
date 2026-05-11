@@ -4,7 +4,7 @@ import { buildShopHref, titleFromShopSegment } from "../../../lib/tags.js";
 import { getShopListingFromSegments } from "../../../lib/catalog.js";
 import AnimatedRouteLink from "../../../components/layout/AnimatedRouteLink.jsx";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export default async function ShopAudiencePage({ params }) {
   const audience = titleFromShopSegment(params.audience) || "Mens";

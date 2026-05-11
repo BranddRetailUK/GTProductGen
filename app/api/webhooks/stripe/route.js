@@ -1,5 +1,7 @@
 import { recordCompletedCheckout, getStripeClient } from "../../../../lib/stripe.js";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(request) {
   const rawBody = await request.text();
   const stripe = getStripeClient();

@@ -1,7 +1,7 @@
 import ProductDetail from "../../../components/products/ProductDetail.jsx";
 import { getStoreProductByHandle } from "../../../lib/catalog.js";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export default async function ProductPage({ params }) {
   const product = await getStoreProductByHandle(params.handle);

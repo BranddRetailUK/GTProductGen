@@ -2,7 +2,7 @@ import ProductGrid from "../../../../components/ProductGrid.jsx";
 import { getShopListingFromSegments } from "../../../../lib/catalog.js";
 import { titleFromShopSegment } from "../../../../lib/tags.js";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export default async function ShopAudienceProductTypePage({ params }) {
   const listing = await getShopListingFromSegments(params.audience, params.productType);

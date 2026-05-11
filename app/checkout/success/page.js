@@ -1,6 +1,8 @@
 import { formatDateTime, formatGbp } from "../../../lib/format.js";
 import { getCheckoutConfirmation } from "../../../lib/catalog.js";
 
+export const dynamic = "force-dynamic";
+
 export default async function CheckoutSuccessPage({ searchParams }) {
   const sessionId = searchParams?.session_id || null;
   const order = sessionId ? await getCheckoutConfirmation(sessionId) : null;
