@@ -37,7 +37,7 @@ export default function AdminLoginForm() {
     <div className="pg-page-shell">
       <div className="pg-page-head">
         <p className="pg-kicker">Admin</p>
-        <h1>Private product control</h1>
+        <h1>Sign in</h1>
         <p>Sign in to manage templates, runs, designs, and generated products.</p>
       </div>
 
@@ -52,7 +52,7 @@ export default function AdminLoginForm() {
         </label>
         {error ? <p className="pg-error-copy">{error}</p> : null}
         <button type="submit" className="pg-primary-button" disabled={loading}>
-          {loading ? "SIGNING IN..." : "SIGN IN"}
+          {loading ? "Signing in..." : "Sign in"}
         </button>
       </form>
     </div>

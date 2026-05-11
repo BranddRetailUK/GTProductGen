@@ -135,7 +135,7 @@ export default function RunConsolePanel() {
 
         {status ? <p className="pg-muted-copy">{status}</p> : null}
         <button type="submit" className="pg-primary-button">
-          CREATE RUN
+          Create run
         </button>
       </form>
 

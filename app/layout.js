@@ -10,12 +10,12 @@ export const metadata = {
 };
 
 function buildThemeInitScript() {
-  return `!function(){var root=document.documentElement;root.dataset.theme="dark";root.style.colorScheme="dark";}();`;
+  return `!function(){var root=document.documentElement;root.dataset.theme="light";root.style.colorScheme="light";}();`;
 }
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" data-theme="light" suppressHydrationWarning style={{ colorScheme: "light" }}>
       <body>
         <script dangerouslySetInnerHTML={{ __html: buildThemeInitScript() }} />
         <main className="site-main">{children}</main>

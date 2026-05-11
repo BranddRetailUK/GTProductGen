@@ -46,7 +46,7 @@ export default function DesignLibraryPanel() {
 
       <div className="pg-toolbar">
         <button type="button" className="pg-primary-button" onClick={handleRescan} disabled={loading}>
-          {loading ? "RESCANNING..." : "RESCAN DROPBOX"}
+          {loading ? "Rescanning..." : "Rescan Dropbox"}
         </button>
         {status ? <span className="pg-muted-copy">{status}</span> : null}
       </div>

@@ -58,8 +58,8 @@ export default function ProductAdminPanel() {
   return (
     <div className="pg-admin-panel">
       <div className="pg-page-head">
-        <p className="pg-kicker">Product Admin</p>
-        <h2>Edit generated storefront products</h2>
+        <p className="pg-kicker">Product admin</p>
+        <h2>Edit generated products</h2>
       </div>
 
       <div className="pg-admin-grid">
@@ -105,7 +105,7 @@ export default function ProductAdminPanel() {
           </label>
           {status ? <p className="pg-muted-copy">{status}</p> : null}
           <button type="submit" className="pg-primary-button">
-            SAVE PRODUCT
+            Save product
           </button>
         </form>
       </div>

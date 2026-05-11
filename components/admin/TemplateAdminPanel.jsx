@@ -124,7 +124,7 @@ export default function TemplateAdminPanel() {
           </label>
           {status ? <p className="pg-muted-copy">{status}</p> : null}
           <button type="submit" className="pg-primary-button">
-            SAVE TEMPLATE
+            Save template
           </button>
         </form>
       </div>
