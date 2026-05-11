@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { RUN_MODE_BULK, RUN_MODE_SINGLE, RUN_STATUS_QUEUED, RUN_STATUS_RUNNING } from "../../lib/constants.js";
@@ -7,6 +9,7 @@ import { RUN_MODE_BULK, RUN_MODE_SINGLE, RUN_STATUS_QUEUED, RUN_STATUS_RUNNING }
 const ACTIVE_RUN_STATUSES = new Set([RUN_STATUS_QUEUED, RUN_STATUS_RUNNING]);
 
 export default function RunConsolePanel() {
+  const router = useRouter();
   const [templates, setTemplates] = useState([]);
   const [designs, setDesigns] = useState([]);
   const [runs, setRuns] = useState([]);
@@ -78,6 +81,7 @@ export default function RunConsolePanel() {
     }
     setStatus(`Run created: ${payload.run.id}`);
     await fetchRuns();
+    router.push(`/admin/runs/${payload.run.id}`);
   }
 
   return (
@@ -171,6 +175,9 @@ function RunTableRow({ run }) {
   return (
     <div className="pg-table-row">
       <strong>{run.id}</strong>
+      <Link href={`/admin/runs/${run.id}`} className="pg-inline-link">
+        View status
+      </Link>
       <span>{run.mode}</span>
       <span>{run.status}</span>
       <span>
