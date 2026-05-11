@@ -2,7 +2,7 @@
 
 Private product generation service for Railway.
 
-This repo is no longer a customer-facing storefront. Shopify owns the storefront and checkout. Product Gen is the internal admin service that scans artwork from Dropbox, renders product images, stores run history, uploads generated images to Cloudinary, and prepares generated product records for a later Shopify Admin API publishing step.
+This repo is no longer a customer-facing storefront. Shopify owns the storefront and checkout. Product Gen is the internal admin service that scans artwork from Dropbox, renders product images, stores run history, uploads generated images to Cloudinary, and creates draft products through the Shopify Admin API.
 
 ## Current State
 
@@ -16,7 +16,7 @@ As of 2026-05-11:
 - Cloudinary image output is configured for the `ImageGen` media-library folder through `CLOUDINARY_UPLOAD_FOLDER=ImageGen`.
 - Base product images are read from the separate Cloudinary environment through `CLOUDINARY_BASE_*`, with `CLOUDINARY_BASE_FOLDER=template_product_images`.
 - Postgres is used through `DATABASE_URL`.
-- Shopify variables are documented and should be populated locally and in Railway, but the Shopify publisher is not implemented yet.
+- Shopify variables are documented in `.env.example`, can be checked with `npm run check:env`, and are used by the draft-product publisher.
 - Stripe is not currently used by this service.
 
 ## Admin UI
@@ -85,11 +85,17 @@ The snapshot contains Shopify-derived template product and variant metadata. Cur
 - print areas JSON
 - view assets JSON
 
-Generated products are currently local Product Gen records. They are not pushed to Shopify yet.
+Generated products are local Product Gen records until an admin publishes them to Shopify as draft products.
 
 ## Environment Variables
 
-`.env` is used locally and is intentionally ignored by Git. There is no committed `.env.example` file. Keep local secrets in `.env` and mirror production values into Railway Variables.
+`.env` is used locally and is intentionally ignored by Git. Use `.env.example` as the safe template, keep local secrets in `.env`, and mirror production values into Railway Variables.
+
+Check local readiness without printing secret values:
+
+```bash
+npm run check:env
+```
 
 Required for production:
 
@@ -137,15 +143,29 @@ Shopify placeholders:
 
 | Variable | Purpose |
 | --- | --- |
-| `SHOPIFY_STORE_DOMAIN` | Shopify shop domain, for example `example.myshopify.com`. |
-| `SHOPIFY_ADMIN_ACCESS_TOKEN` | Admin API access token. |
-| `SHOPIFY_API_VERSION` | Target Shopify Admin API version. |
-| `SHOPIFY_PRODUCT_STATUS` | Intended status for pushed products, usually `draft` at first. |
+| `SHOPIFY_STORE_DOMAIN` | Shopify shop domain, for example `example.myshopify.com`. `SHOP_DOMAIN` is also accepted locally. |
+| `SHOPIFY_ADMIN_ACCESS_TOKEN` | Admin API access token. `SHOPIFY_ACCESS_TOKEN` is also accepted locally. |
+| `SHOPIFY_API_VERSION` | Target Shopify Admin API version. `SHOPIFY_ADMIN_API_VERSION` is also accepted locally. Use `2026-04` while it is the latest stable version. |
+| `SHOPIFY_PRODUCT_STATUS` | Intended status for pushed products. Defaults to `draft` if omitted. |
 | `SHOPIFY_DEFAULT_VENDOR` | Fallback vendor for Shopify products. |
 | `SHOPIFY_DEFAULT_PRODUCT_TYPE` | Fallback product type. |
-| `SHOPIFY_LOCATION_ID` | Fulfilment/inventory location ID when needed. |
+| `SHOPIFY_LOCATION_ID` | Fulfilment/inventory location ID used to seed stock on created variants. If omitted, Product Gen attempts to resolve one from Shopify locations. |
+| `SHOPIFY_LOCATION_NAME` | Optional location-name preference when resolving a Shopify location. Defaults locally to `GG Apparel`. |
+| `SHOPIFY_DEFAULT_INVENTORY_QUANTITY` | Initial inventory quantity assigned to every newly-created Shopify variant. Defaults to `99`. |
 
-Shopify publishing is the next integration step. These variables are documented and ready to populate, but the service does not yet call the Shopify Admin API.
+Shopify publishing creates draft products through the Admin GraphQL API and verifies variant media, SKUs, unit cost, and initial inventory after creation.
+
+Check Shopify Admin API connectivity and granted product scope:
+
+```bash
+npm run check:shopify
+```
+
+Create one safe draft Shopify product, read it back, and enforce draft status:
+
+```bash
+npm run smoke:shopify-product
+```
 
 ## Local Development
 
@@ -173,6 +193,58 @@ Seed or initialize database-backed state:
 
 ```bash
 npm run seed
+```
+
+Check environment configuration:
+
+```bash
+npm run check:env
+```
+
+Check Shopify connection and scopes:
+
+```bash
+npm run check:shopify
+```
+
+Run a live draft product creation smoke test:
+
+```bash
+npm run smoke:shopify-product
+```
+
+Run a live Product Gen publish smoke test using a generated product and a temporary suffixed Shopify handle:
+
+```bash
+npm run smoke:product-gen-publish
+```
+
+Generated products can be published from `/admin/products`. Product Gen creates a draft Shopify product from the
+synced Good Game template options and variants, uploads the generated colour images as Shopify product media, and links
+each Shopify variant to the media for its colour. Variant SKUs, unit cost, shipping weight, and initial inventory come
+from the synced template variant rows. Publishing fails if any required colour image is missing or if Shopify readback
+does not show the expected variant SKU, cost, media, and inventory data.
+
+Dry-run template product metadata sync from the main Good Game database:
+
+```bash
+npm run sync:good-game-templates
+```
+
+Apply the sync after reviewing the dry-run output:
+
+```bash
+npm run sync:good-game-templates -- --apply
+```
+
+Applied template syncs replace Product Gen's local template catalog with the Good Game-aligned templates by default,
+removing older duplicate seed templates. Pass `--keep-existing` only when explicitly preserving unmatched local
+templates for debugging.
+
+Regenerate generated product records whose variants or colour images no longer match synced template data:
+
+```bash
+npm run regen:misaligned-products -- --apply
 ```
 
 Sync real base product images from the source Cloudinary environment into template `viewAssets`:

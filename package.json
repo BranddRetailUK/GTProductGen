@@ -8,6 +8,12 @@
     "build": "next build",
     "start": "NODE_ENV=production node server/index.js",
     "seed": "node db/seed.js",
+    "check:env": "node scripts/check-env.js",
+    "check:shopify": "node scripts/check-shopify-connection.js",
+    "smoke:shopify-product": "node scripts/smoke-test-shopify-product.js",
+    "smoke:product-gen-publish": "node scripts/smoke-test-product-gen-publish.js",
+    "regen:misaligned-products": "node scripts/regenerate-misaligned-products.js",
+    "sync:good-game-templates": "node scripts/sync-good-game-templates.js",
     "sync:base-images": "node scripts/sync-base-product-images.js"
   },
   "dependencies": {

@@ -11,6 +11,7 @@ export default function ProductAdminPanel() {
     status: "published"
   });
   const [status, setStatus] = useState("");
+  const selectedProduct = products.find((product) => String(product.id) === String(selectedId)) || null;
 
   useEffect(() => {
     void fetchProducts();
@@ -52,6 +53,22 @@ export default function ProductAdminPanel() {
       return;
     }
     setStatus("Product saved.");
+    await fetchProducts();
+  }
+
+  async function handlePublish() {
+    if (!selectedId) return;
+    setStatus("");
+
+    const response = await fetch(`/api/admin/products/${selectedId}/publish`, {
+      method: "POST"
+    });
+    const payload = await response.json();
+    if (!response.ok) {
+      setStatus(payload?.error || "shopify_publish_failed");
+      return;
+    }
+    setStatus(`Shopify draft created: ${payload?.shopify?.handle || payload?.shopify?.productId}`);
     await fetchProducts();
   }
 
@@ -107,6 +124,19 @@ export default function ProductAdminPanel() {
           <button type="submit" className="pg-primary-button">
             Save product
           </button>
+          <button
+            type="button"
+            className="pg-inline-button"
+            onClick={handlePublish}
+            disabled={!selectedProduct || Boolean(selectedProduct?.shopify?.productGid)}
+          >
+            {selectedProduct?.shopify?.productGid ? "Published to Shopify" : "Create Shopify draft"}
+          </button>
+          {selectedProduct?.shopify?.adminUrl ? (
+            <a className="pg-inline-button" href={selectedProduct.shopify.adminUrl} target="_blank" rel="noreferrer">
+              Open Shopify product
+            </a>
+          ) : null}
         </form>
       </div>
     </div>
