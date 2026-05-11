@@ -59,6 +59,10 @@ The generation pipeline currently:
 6. Uploads rendered PNGs to Cloudinary.
 7. Stores generated product, image, variant, and run state.
 
+Generated product identity is based on artwork filename/title plus the selected template. If the same artwork title and
+template are generated again, Product Gen replaces that matching local product record and uploads fresh rendered images.
+Different artwork filenames produce separate products.
+
 Supported Dropbox extensions in the scanner:
 
 - `.png`

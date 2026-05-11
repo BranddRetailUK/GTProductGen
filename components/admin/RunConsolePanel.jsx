@@ -16,7 +16,6 @@ export default function RunConsolePanel() {
   const [mode, setMode] = useState(RUN_MODE_SINGLE);
   const [templateIds, setTemplateIds] = useState([]);
   const [designIds, setDesignIds] = useState([]);
-  const [forceRerun, setForceRerun] = useState(false);
   const [status, setStatus] = useState("");
 
   const fetchTemplates = useCallback(async () => {
@@ -70,8 +69,7 @@ export default function RunConsolePanel() {
       body: JSON.stringify({
         mode,
         designIds: effectiveDesignIds,
-        templateIds,
-        forceRerun
+        templateIds
       })
     });
     const payload = await response.json();
@@ -100,10 +98,6 @@ export default function RunConsolePanel() {
           <label>
             <input type="radio" checked={mode === RUN_MODE_BULK} onChange={() => setMode(RUN_MODE_BULK)} />
             Bulk all designs
-          </label>
-          <label>
-            <input type="checkbox" checked={forceRerun} onChange={(event) => setForceRerun(event.target.checked)} />
-            Force rerun
           </label>
         </div>
 

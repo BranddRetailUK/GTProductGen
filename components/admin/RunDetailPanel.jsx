@@ -128,7 +128,6 @@ export default function RunDetailPanel({ runId }) {
             <RunSummaryCard label="Skipped" value={String(statusCounts[ITEM_STATUS_SKIPPED] || 0)} />
             <RunSummaryCard label="Remaining" value={String(getRemainingCount(run))} />
             <RunSummaryCard label="Mode" value={run.mode} />
-            <RunSummaryCard label="Force rerun" value={run.forceRerun ? "Yes" : "No"} />
             <RunSummaryCard label="Started" value={formatDate(run.startedAt)} />
           </div>
 
@@ -172,8 +171,8 @@ export default function RunDetailPanel({ runId }) {
               </div>
               <div className="pg-run-note">
                 <p>
-                  These images came from existing product records because matching products already existed. Enable Force
-                  rerun when creating a run to render and upload fresh Cloudinary images.
+                  These images came from existing product records because this older run skipped matching products. New
+                  runs now render and upload fresh images, replacing the matching product title/template record.
                 </p>
               </div>
               <div className="pg-run-image-grid">
@@ -241,7 +240,9 @@ function RunItemCard({ item }) {
         <span>{item.design?.displayName || item.designId}</span>
         {item.product ? <span>{item.product.title}</span> : null}
         {item.status === ITEM_STATUS_SKIPPED ? (
-          <p className="pg-muted-copy">Existing product reused. Force rerun is required for a fresh render/upload.</p>
+          <p className="pg-muted-copy">
+            Existing product reused by older skip logic. Create a new run to render and upload fresh images.
+          </p>
         ) : null}
         {item.errorMessage ? <p className="pg-error-copy">{item.errorMessage}</p> : null}
       </div>
