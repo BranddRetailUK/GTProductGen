@@ -5544,6 +5544,179 @@ body::after {
   text-align: center;
 }
 
+.pg-print-area-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+  gap: 18px;
+  align-items: start;
+}
+
+.pg-print-editor-panel,
+.pg-print-template-panel {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+  background: var(--admin-surface);
+}
+
+.pg-print-editor-toolbar {
+  display: grid;
+  grid-template-columns: minmax(140px, 180px) minmax(160px, 220px) auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: end;
+}
+
+.pg-print-editor-toolbar .pg-muted-copy {
+  align-self: center;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.pg-print-stage {
+  position: relative;
+  width: min(100%, 760px);
+  aspect-ratio: 1;
+  justify-self: center;
+  overflow: hidden;
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+  background: var(--admin-surface-soft);
+  touch-action: none;
+  user-select: none;
+}
+
+.pg-print-stage img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.pg-print-stage-empty {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  padding: 24px;
+  color: var(--admin-muted);
+  text-align: center;
+}
+
+.pg-print-area-box {
+  position: absolute;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  min-width: 28px;
+  min-height: 28px;
+  border: 3px solid #ff2f55;
+  border-radius: 6px;
+  background: rgba(255, 47, 85, 0.08);
+  color: #ff2f55;
+  cursor: move;
+}
+
+.pg-print-area-box span {
+  padding: 8px 10px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.pg-print-area-handle {
+  position: absolute;
+  right: -9px;
+  bottom: -9px;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 1px solid #b98900;
+  border-radius: 5px;
+  background: #ffe066;
+  cursor: nwse-resize;
+}
+
+.pg-print-values {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.pg-print-template-panel {
+  position: sticky;
+  top: 24px;
+}
+
+.pg-print-template-list {
+  display: grid;
+  gap: 10px;
+  max-height: min(680px, calc(100vh - 220px));
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.pg-print-template-item {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--admin-ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.pg-print-template-item:hover,
+.pg-print-template-item:focus-visible,
+.pg-print-template-item.is-active {
+  border-color: var(--admin-border-strong);
+  outline: none;
+}
+
+.pg-print-template-thumb {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 1px solid var(--admin-border);
+  border-radius: 6px;
+  background: var(--admin-surface-soft);
+}
+
+.pg-print-template-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.pg-print-template-item strong,
+.pg-print-template-item small {
+  display: block;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.pg-print-template-item strong {
+  margin-bottom: 4px;
+  font-size: 0.95rem;
+}
+
+.pg-print-template-item small {
+  color: var(--admin-muted);
+  line-height: 1.35;
+}
+
 .pg-error-copy {
   margin: 0;
   color: #b42318;
@@ -5553,12 +5726,18 @@ body::after {
 @media (max-width: 1100px) {
   .pg-admin-shell,
   .pg-admin-grid,
-  .pg-admin-overview-grid {
+  .pg-admin-overview-grid,
+  .pg-print-area-layout {
     grid-template-columns: 1fr;
   }
 
-  .pg-admin-sidebar {
+  .pg-admin-sidebar,
+  .pg-print-template-panel {
     position: static;
+  }
+
+  .pg-print-template-list {
+    max-height: none;
   }
 }
 
@@ -5573,8 +5752,15 @@ body::after {
   .pg-admin-login,
   .pg-admin-checklist,
   .pg-table,
-  .pg-empty-state {
+  .pg-empty-state,
+  .pg-print-editor-panel,
+  .pg-print-template-panel {
     padding: 14px;
+  }
+
+  .pg-print-editor-toolbar,
+  .pg-print-values {
+    grid-template-columns: 1fr;
   }
 
   .pg-run-item-card {

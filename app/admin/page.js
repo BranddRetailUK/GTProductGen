@@ -12,6 +12,11 @@ const ADMIN_ACTIONS = [
     description: "Manage print areas and product view assets for tees and hoodies."
   },
   {
+    href: "/admin/print-areas",
+    title: "Print areas",
+    description: "Set artwork placement visually on each template product image."
+  },
+  {
     href: "/admin/runs",
     title: "Generation runs",
     description: "Queue single or bulk image generation and review job history."
