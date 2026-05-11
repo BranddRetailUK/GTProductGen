@@ -128,6 +128,35 @@ Dropbox app permissions required:
 - `files.metadata.read` for recursive scans
 - `files.content.read` for temporary file links used during rendering
 
+### Dropbox Long-Running Auth
+
+Dropbox access tokens are short-lived. For production, use a long-lived refresh token instead of updating
+`DROPBOX_ACCESS_TOKEN` manually.
+
+One-time setup:
+
+1. Set `DROPBOX_APP_KEY` and `DROPBOX_APP_SECRET` locally from the Dropbox app console.
+2. Generate the offline authorization URL:
+
+```bash
+npm run dropbox:auth-url
+```
+
+3. Open the URL, approve the app, and copy the authorization code.
+4. Exchange the code for a refresh token:
+
+```bash
+npm run dropbox:exchange-code -- <authorization-code>
+```
+
+5. Add `DROPBOX_REFRESH_TOKEN`, `DROPBOX_APP_KEY`, and `DROPBOX_APP_SECRET` to Railway Variables and local `.env`.
+6. Remove `DROPBOX_ACCESS_TOKEN` after `DROPBOX_REFRESH_TOKEN` is configured.
+7. Verify renewal works:
+
+```bash
+npm run dropbox:test-refresh
+```
+
 Runtime and queue options:
 
 | Variable | Default | Purpose |
